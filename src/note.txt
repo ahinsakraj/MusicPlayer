@@ -1,0 +1,118 @@
+This is the code in the traditional switch case but as Intellij prompted me to use an advanced switch case I did that but,
+I want to save the traditional version also.
+
+    private static void play(LinkedList<Song> playlist) {
+        ListIterator<Song> itr = playlist.listIterator();
+
+        if(playlist.isEmpty()) {
+            System.out.println("Add songs to this playlist to play");
+            return;
+        }
+        Song currentSong = itr.next();
+
+        Scanner scn = new Scanner(System.in);
+
+        boolean quitPlaylist = false;
+        boolean songIsPaused = false;
+        int previousCmd = 1; // 0 for move back and 1 for move forward
+
+//        this loop will help the user to navigate in the playlist
+        int wrongChoiceCount = 0;
+        int choice = 0;
+        while(!quitPlaylist && !playlist.isEmpty()) {
+            if(choice != 2) {
+                System.out.println("Now Playing : " + currentSong.getTitle());
+            }
+            printMenu(songIsPaused);
+            choice = scn.nextInt();
+            switch (choice) {
+                case 1 : {
+                    printSongs(playlist);
+                    break;
+                }
+                case 2 : {
+                    if(songIsPaused) {
+                        songIsPaused = false;
+                        System.out.println(currentSong.getTitle() + " : is resumed");
+                    } else {
+                        songIsPaused = true;
+                        System.out.println(currentSong.getTitle() + " : is paused");
+                    }
+                    break;
+                }
+                case 3 : {
+                    if(previousCmd == 0) {
+                        previousCmd = 1;
+                        itr.next();
+                    }
+                    if(itr.hasNext()) {
+                        currentSong = itr.next();
+//                        System.out.println("Now Playing : " + currentSong.getTitle());
+                    } else {
+                        System.out.println("No next song exists you are at the end of playlist");
+                    }
+                    break;
+                }
+                case 4 : {
+                    if(previousCmd == 1) {
+                        previousCmd = 0;
+                        itr.previous();
+                    }
+                    if(itr.hasPrevious()) {
+                        currentSong = itr.previous();
+//                        System.out.println("Now Playing : " + currentSong.getTitle());
+                    } else {
+                        System.out.println("No previous song exists you are at the start of playlist");
+                    }
+                    break;
+                }
+                case 5 : {
+                    System.out.println("Replaying : " + currentSong.getTitle());
+                    break;
+                }
+                case 6 : {
+                    /*
+                    implement song shifting as we delete any song and any possible solution
+                     */
+                    if(!itr.hasNext()) {
+                        itr.previous();
+                    }
+                    if(!itr.hasPrevious()) {
+                        itr.next();
+                    }
+                    System.out.println("Deleted : " + currentSong.getTitle());
+                    itr.remove();
+                    if(playlist.isEmpty()) {
+                        return;
+                    }
+                    if(itr.hasNext()) {
+                        currentSong = itr.next();
+                        previousCmd = 1;
+                    } else {
+                        previousCmd = 0;
+                        currentSong = itr.previous();
+                    }
+                    break;
+                }
+                case 7 : {
+                    quitPlaylist = true;
+                    System.out.println("Quit");
+                    break;
+                }
+                default : {
+                    wrongChoiceCount++;
+                    if(wrongChoiceCount <= 3) {
+                        System.out.println("Your input is invalid");
+                    } else {
+                        wrongChoiceCount = 0;
+                        quitPlaylist = true;
+                        System.out.println("Detected unintentional behaviour" + "\n" + "Quit the Application");
+                    }
+                }
+            }
+            if(choice >= 1 && choice <= 7) {
+                wrongChoiceCount = 0;
+            }
+        }
+
+    }
